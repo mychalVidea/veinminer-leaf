@@ -21,6 +21,21 @@ Drop them into your server's `plugins/` folder and restart.
 
 ---
 
+## 📊 Comparison
+
+### Upstream VeinMiner (Modrinth) vs. This Leaf Build
+
+| Aspect / Feature | Upstream VeinMiner (Official Modrinth) | `veinminer-leaf` (This Build) |
+|---|---|---|
+| **Plugin Codebase** | MiraculixxT/Veinminer (`main`) | **100% identical codebase** (unmodified mechanics) |
+| **Java Target** | Java 21 | **Java 25 (LTS) & Minecraft 26.x** |
+| **Release Artifacts** | Addons downloaded separately | **Both `veinminer-leaf.jar` and `veinminer-enchant.jar` in one release** |
+| **Update Lifecycle** | Dependent on author's manual Modrinth releases | **Automated weekly rebuild tracking latest `main` branch** |
+| **Unreleased Fixes** | Must wait for new version tag | **Immediate access to newest unreleased commits & patches** |
+| **Artifact Name** | `veinminer-paper-{version}.jar` | **`veinminer-leaf-{version}.jar`** |
+
+---
+
 ## ⚙️ Features
 
 - Built natively for **Paper, Purpur, Leaf, and Folia**.
@@ -65,6 +80,17 @@ Release obsahuje:
 - `veinminer-enchant-{version}.jar` (enchantment addon)
 
 Vlož je do složky `plugins/` a restartuj server.
+
+### 📊 Porovnání (Upstream z Modrinthu vs. Tento Leaf build)
+
+| Aspekt / Vlastnost | Upstream VeinMiner (Modrinth / CurseForge) | `veinminer-leaf` (Tento build) |
+|---|---|---|
+| **Kód pluginu** | MiraculixxT/Veinminer (`main`) | **100% identický kód** (žádné úpravy mechanik) |
+| **Cílová Java** | Java 21 | **Java 25 (LTS) & Minecraft 26.x** |
+| **Obsah vydání** | Addon je nutné hledat a stahovat zvlášť | **`veinminer-leaf.jar` i `veinminer-enchant.jar` v jednom release** |
+| **Životní cyklus** | Závislý na ručním vydávání autorem na Modrinthu | **Automatický týdenní build přímo z `main` větve** |
+| **Nevydané opravy** | Čeká se na vydání nové verze | **Okamžitý přístup k nejnovějším opravám z upstreamu** |
+| **Název souboru** | `veinminer-paper-{verze}.jar` | **`veinminer-leaf-{verze}.jar`** |
 
 ### Jak to funguje
 
