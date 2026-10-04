@@ -45,10 +45,16 @@ jobs:
       - name: Build VeinMiner Bukkit with ShadowJar
         run: ./gradlew :veinminer-bukkit:shadowJar --no-daemon
 
+      - name: Rename JAR (Bukkit → Leaf)
+        run: |
+          for f in veinminer-bukkit/build/libs/VeinMiner-Bukkit-*.jar; do
+            mv "$f" "${f/VeinMiner-Bukkit-/VeinMiner-Leaf-}"
+          done
+
       - name: Locate Build Artifact
         id: find_jar
         run: |
-          JAR_PATH=$(find veinminer-bukkit/build/libs/ -name "VeinMiner-Bukkit-*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -n 1)
+          JAR_PATH=$(find veinminer-bukkit/build/libs/ -name "VeinMiner-Leaf-*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -n 1)
           echo "Found jar: $JAR_PATH"
           echo "jar_path=$JAR_PATH" >> $GITHUB_OUTPUT
           JAR_NAME=$(basename "$JAR_PATH")
