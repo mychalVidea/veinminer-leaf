@@ -12,15 +12,15 @@ permissions:
 
 jobs:
   build:
-    name: Sync, Patch & Build VeinMiner
+    name: Sync & Build VeinMiner
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Upstream VeinMiner (2008Choco/VeinMiner)
+      - name: Checkout Upstream VeinMiner (MiraculixxT/Veinminer)
         uses: actions/checkout@v4
         with:
-          repository: '2008Choco/VeinMiner'
-          ref: 'master'
+          repository: 'MiraculixxT/Veinminer'
+          ref: 'main'
           fetch-depth: 0
 
       - name: Set up Java 25
@@ -33,32 +33,24 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Patch for Leaf API
-        run: |
-          echo "Patching Java version to 25 in build.gradle.kts..."
-          sed -i 's/JavaLanguageVersion.of(21)/JavaLanguageVersion.of(25)/g' build.gradle.kts
-          sed -i 's/options.release = 21/options.release = 25/g' build.gradle.kts
-          echo "Patching repositories and dependencies for Leaf API..."
-          sed -i 's|compileOnly(libs.spigot.api)|compileOnly("cn.dreeam.leaf:leaf-api:26.3.local-SNAPSHOT")|g' veinminer-bukkit/build.gradle.kts
-          sed -i '/repositories {/a \    maven("https://repo.papermc.io/repository/maven-public/")\n    maven("https://maven.leafmc.one/snapshots/")' veinminer-bukkit/build.gradle.kts
+      - name: Build VeinMiner Paper & Enchantment with ShadowJar
+        run: ./gradlew :veinminer:paper:shadowJar :veinminer-enchant:jar --no-daemon
 
-      - name: Build VeinMiner Bukkit with ShadowJar
-        run: ./gradlew :veinminer-bukkit:shadowJar --no-daemon
-
-      - name: Rename JAR (Bukkit → Leaf)
+      - name: Rename JAR (veinminer-paper → veinminer-leaf)
         run: |
-          for f in veinminer-bukkit/build/libs/VeinMiner-Bukkit-*.jar; do
-            mv "$f" "${f/VeinMiner-Bukkit-/VeinMiner-Leaf-}"
+          for f in veinminer/paper/build/libs/veinminer-paper-*.jar; do
+            mv "$f" "${f/veinminer-paper-/veinminer-leaf-}"
           done
 
-      - name: Locate Build Artifact
-        id: find_jar
+      - name: Locate Build Artifacts
+        id: find_jars
         run: |
-          JAR_PATH=$(find veinminer-bukkit/build/libs/ -name "VeinMiner-Leaf-*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -n 1)
-          echo "Found jar: $JAR_PATH"
-          echo "jar_path=$JAR_PATH" >> $GITHUB_OUTPUT
-          JAR_NAME=$(basename "$JAR_PATH")
-          echo "jar_name=$JAR_NAME" >> $GITHUB_OUTPUT
+          PAPER_JAR=$(find veinminer/paper/build/libs/ -name "veinminer-leaf-*.jar" ! -name "*-dev.jar" ! -name "*-sources.jar" | head -n 1)
+          ENCHANT_JAR=$(find veinminer-enchant/build/libs/ -name "veinminer-enchant-*.jar" ! -name "*-dev.jar" ! -name "*-sources.jar" | head -n 1)
+          echo "Found Paper/Leaf jar: $PAPER_JAR"
+          echo "Found Enchant jar: $ENCHANT_JAR"
+          echo "paper_jar=$PAPER_JAR" >> $GITHUB_OUTPUT
+          echo "enchant_jar=$ENCHANT_JAR" >> $GITHUB_OUTPUT
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
@@ -66,12 +58,17 @@ jobs:
           tag_name: latest-leaf-build
           name: "VeinMiner (Leaf Build) - Auto-Updated"
           body: |
-            Automaticky sestavený nejnovější build VeinMineru optimalizovaný pro **Leaf API (26.3)** a Paper/Purpur.
+            Automaticky sestavený nejnovější build VeinMineru (Kotlin / Paper & Folia kompatibilní) pro **Leaf 26.x**.
             
-            - **Upstream repozitář:** [2008Choco/VeinMiner](https://github.com/2008Choco/VeinMiner)
-            - **API cíl:** `cn.dreeam.leaf:leaf-api:26.3.local-SNAPSHOT`
+            - **Upstream repozitář:** [MiraculixxT/Veinminer](https://github.com/MiraculixxT/Veinminer) (větev `main`)
+            - **Platforma:** Paper / Purpur / Leaf / Folia
             - **Java:** 25 (LTS)
+            - **Obsahuje:**
+              - `veinminer-leaf-{version}.jar` (hlavní plugin)
+              - `veinminer-enchant-{version}.jar` (enchantment addon)
             - **Aktualizováno:** Každou neděli automaticky nebo na vyžádání.
-          files: ${{ steps.find_jar.outputs.jar_path }}
+          files: |
+            ${{ steps.find_jars.outputs.paper_jar }}
+            ${{ steps.find_jars.outputs.enchant_jar }}
           prerelease: false
           draft: false
