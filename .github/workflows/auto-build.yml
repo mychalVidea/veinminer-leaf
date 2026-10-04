@@ -34,19 +34,25 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build VeinMiner Paper & Enchantment with ShadowJar
-        run: ./gradlew :veinminer:paper:shadowJar :veinminer-enchant:jar --no-daemon
+        run: ./gradlew :veinminer:veinminer-paper:shadowJar :veinminer-enchant:jar --no-daemon
 
-      - name: Rename JAR (veinminer-paper → veinminer-leaf)
-        run: |
-          for f in veinminer/paper/build/libs/veinminer-paper-*.jar; do
-            mv "$f" "${f/veinminer-paper-/veinminer-leaf-}"
-          done
-
-      - name: Locate Build Artifacts
+      - name: Process & Locate Build Artifacts
         id: find_jars
         run: |
-          PAPER_JAR=$(find veinminer/paper/build/libs/ -name "veinminer-leaf-*.jar" ! -name "*-dev.jar" ! -name "*-sources.jar" | head -n 1)
-          ENCHANT_JAR=$(find veinminer-enchant/build/libs/ -name "veinminer-enchant-*.jar" ! -name "*-dev.jar" ! -name "*-sources.jar" | head -n 1)
+          # Find and rename paper jar to leaf
+          PAPER_RAW=$(find . -path "*/build/libs/*" -name "veinminer-paper-*.jar" ! -name "*-dev.jar" ! -name "*-sources.jar" | head -n 1)
+          if [ -n "$PAPER_RAW" ]; then
+            PAPER_DIR=$(dirname "$PAPER_RAW")
+            PAPER_BASE=$(basename "$PAPER_RAW")
+            LEAF_BASE="${PAPER_BASE/veinminer-paper-/veinminer-leaf-}"
+            mv "$PAPER_RAW" "$PAPER_DIR/$LEAF_BASE"
+            PAPER_JAR="$PAPER_DIR/$LEAF_BASE"
+          else
+            PAPER_JAR=$(find . -path "*/build/libs/*" -name "veinminer-leaf-*.jar" ! -name "*-dev.jar" ! -name "*-sources.jar" | head -n 1)
+          fi
+
+          ENCHANT_JAR=$(find . -path "*/build/libs/*" -name "veinminer-enchant-*.jar" ! -name "*-dev.jar" ! -name "*-sources.jar" | head -n 1)
+
           echo "Found Paper/Leaf jar: $PAPER_JAR"
           echo "Found Enchant jar: $ENCHANT_JAR"
           echo "paper_jar=$PAPER_JAR" >> $GITHUB_OUTPUT
