@@ -1,6 +1,8 @@
 name: Auto-Sync & Build VeinMiner for Leaf
 
 on:
+  push:
+    branches: [ main ]
   schedule:
     # Automatické sestavení každou neděli ve 3:00 UTC ráno
     - cron: '0 3 * * 0'
