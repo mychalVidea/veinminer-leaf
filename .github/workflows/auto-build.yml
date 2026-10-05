@@ -38,17 +38,18 @@ jobs:
       - name: Patch for Leaf dev-bundle (26.3.local-SNAPSHOT)
         run: |
           echo "==> Přidávám Leaf Maven snapshot repozitář do settings.gradle.kts pluginManagement..."
-          sed -i 's|pluginManagement {|pluginManagement {|' settings.gradle.kts
           sed -i '/pluginManagement {/{n; s|repositories {|repositories {\n        maven("https://maven.leafmc.one/snapshots/")|;}' settings.gradle.kts
 
           echo "==> Přidávám Leaf Maven snapshot repozitář do buildSrc repositories..."
           sed -i 's|repositories {|repositories {\n    maven("https://maven.leafmc.one/snapshots/")|' buildSrc/build.gradle.kts
 
-          echo "==> Přepisuji paperVersion v gradle.properties na Leaf dev-bundle verzi..."
-          sed -i 's|^paperVersion=.*|paperVersion=26.3.local-SNAPSHOT|' gradle.properties
-
-          echo "==> Přidávám Leaf Maven repozitář do buildSrc/paper-script convention pluginu..."
+          echo "==> Konfiguruji paper-script pro Leaf dev-bundle (cn.dreeam.leaf)..."
           sed -i 's|maven("https://repo.papermc.io/repository/maven-public/")|maven("https://repo.papermc.io/repository/maven-public/")\n    maven("https://maven.leafmc.one/snapshots/")|' buildSrc/src/main/kotlin/paper-script.gradle.kts
+          sed -i 's|paperweight.paperDevBundle("$paperVersion")|paperweight.devBundle("cn.dreeam.leaf", "26.3.local-SNAPSHOT")|' buildSrc/src/main/kotlin/paper-script.gradle.kts
+
+          echo "==> Konfiguruji veinminer-enchant pro Leaf API..."
+          sed -i 's|maven("https://repo.papermc.io/repository/maven-public/")|maven("https://repo.papermc.io/repository/maven-public/")\n    maven("https://maven.leafmc.one/snapshots/")|' veinminer-enchant/build.gradle.kts
+          sed -i 's|compileOnly("io.papermc.paper:paper-api:.*")|compileOnly("cn.dreeam.leaf:leaf-api:26.3.local-SNAPSHOT")|' veinminer-enchant/build.gradle.kts
 
           echo "==> Odstraňuji Fabric, NeoForge a client moduly pro zrychlení buildu..."
           # Odstraň include() řádky pro nepotřebné moduly
@@ -80,6 +81,18 @@ jobs:
 
           echo "Found Paper/Leaf jar: $PAPER_JAR"
           echo "Found Enchant jar: $ENCHANT_JAR"
+
+          if [ -z "$PAPER_JAR" ] || [ ! -f "$PAPER_JAR" ]; then
+            echo "::error::Nebyl nalezen výstupní JAR soubor veinminer-paper / veinminer-leaf!"
+            find . -name "*.jar"
+            exit 1
+          fi
+          if [ -z "$ENCHANT_JAR" ] || [ ! -f "$ENCHANT_JAR" ]; then
+            echo "::error::Nebyl nalezen výstupní JAR soubor veinminer-enchant!"
+            find . -name "*.jar"
+            exit 1
+          fi
+
           echo "paper_jar=$PAPER_JAR" >> $GITHUB_OUTPUT
           echo "enchant_jar=$ENCHANT_JAR" >> $GITHUB_OUTPUT
 
