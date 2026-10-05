@@ -51,7 +51,10 @@ jobs:
           sed -i 's|maven("https://repo.papermc.io/repository/maven-public/")|maven("https://repo.papermc.io/repository/maven-public/")\n    maven("https://maven.leafmc.one/snapshots/")|' buildSrc/src/main/kotlin/paper-script.gradle.kts
 
           echo "==> Odstraňuji Fabric, NeoForge a client moduly pro zrychlení buildu..."
+          # Odstraň include() řádky pro nepotřebné moduly
           sed -i '/include.*fabric/d; /include.*neoforge/d; /include.*client/d' settings.gradle.kts
+          # Odstraň i project().name = ... rename řádky pro smazané projekty (jinak Gradle selže)
+          sed -i '/project.*fabric/d; /project.*neoforge/d; /project.*client/d' settings.gradle.kts
 
           echo "Hotovo – konfigurace pro Leaf 26.3.local-SNAPSHOT dokončena."
 
