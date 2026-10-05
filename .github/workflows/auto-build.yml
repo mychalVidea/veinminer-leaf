@@ -66,15 +66,12 @@ jobs:
           tag_name: latest-leaf-build
           name: "VeinMiner (Leaf Build) - Auto-Updated"
           body: |
-            Automaticky sestavený nejnovější build VeinMineru (Kotlin / Paper & Folia kompatibilní) pro **Leaf 26.x**.
-            
-            - **Upstream repozitář:** [MiraculixxT/Veinminer](https://github.com/MiraculixxT/Veinminer) (větev `main`)
-            - **Platforma:** Paper / Purpur / Leaf / Folia
+            - **Upstream repo:** [MiraculixxT/Veinminer](https://github.com/MiraculixxT/Veinminer) (branch `main`)
+            - **Platform:** Paper / Purpur / Leaf / Folia
             - **Java:** 25 (LTS)
-            - **Obsahuje:**
-              - `veinminer-leaf-{version}.jar` (hlavní plugin)
+            - **Contains:**
+              - `veinminer-leaf-{version}.jar` (main plugin)
               - `veinminer-enchant-{version}.jar` (enchantment addon)
-            - **Aktualizováno:** Každou neděli automaticky nebo na vyžádání.
           files: |
             ${{ steps.find_jars.outputs.paper_jar }}
             ${{ steps.find_jars.outputs.enchant_jar }}
