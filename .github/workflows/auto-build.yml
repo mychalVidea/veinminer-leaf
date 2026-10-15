@@ -60,7 +60,7 @@ jobs:
           echo "Hotovo – konfigurace pro Leaf 26.3.local-SNAPSHOT dokončena."
 
       - name: Build VeinMiner Paper & Enchantment with ShadowJar
-        run: ./gradlew :veinminer:veinminer-paper:shadowJar :veinminer-enchant:jar --no-daemon -x test -x spotlessCheck
+        run: ./gradlew :veinminer:veinminer-paper:shadowJar :veinminer-enchant:jar --no-daemon
 
       - name: Process & Locate Build Artifacts
         id: find_jars
